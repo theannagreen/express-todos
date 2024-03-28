@@ -14,19 +14,30 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// mount middleware into the middleware request 
 app.use(function(req, res, next) {
   console.log('Hello SEI!');
-  req.time  = new Date().toLocaleTimeString();
+  // add a time property to the res.locals object
+  // the time property will be accesible when rendering a view 
+  req.locals.time  = new Date().toLocaleTimeString();
   next();
 });
 
+
+// login the terminal the http request info 
 app.use(logger('dev'));
+// process data sent to the body of the requiest if it's json 
 app.use(express.json());
+// this processes data sent in the 'form' body of the request 
 app.use(express.urlencoded({ extended: false }));
+// add a cookies property for each cookie sent in the request
 app.use(cookieParser());
+// if the request is for a static asset, returns the file 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+//first arg is the "starts with" path 
+// paths within the route modules are combines to start with paths 
 app.use('/', indexRouter);
 app.use('/todos', todosRouter);
 
